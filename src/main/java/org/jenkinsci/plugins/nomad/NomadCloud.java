@@ -33,6 +33,7 @@ import java.util.logging.Logger;
 import static com.cloudbees.plugins.credentials.CredentialsMatchers.filter;
 import static com.cloudbees.plugins.credentials.CredentialsMatchers.withId;
 import static com.cloudbees.plugins.credentials.CredentialsProvider.lookupCredentials;
+import hudson.util.Secret;
 import static org.apache.commons.lang.StringUtils.trimToEmpty;
 
 public class NomadCloud extends AbstractCloudImpl {
@@ -46,9 +47,9 @@ public class NomadCloud extends AbstractCloudImpl {
     private final Boolean prune;
     private boolean tlsEnabled;
     private String clientCertificate;
-    private String clientPassword;
+    private Secret clientPassword;
     private String serverCertificate;
-    private String serverPassword;
+    private Secret serverPassword;
     private String jenkinsUrl;
     private String jenkinsTunnel;
     private String workerUrl;
@@ -63,9 +64,9 @@ public class NomadCloud extends AbstractCloudImpl {
             String nomadUrl,
             boolean tlsEnabled,
             String clientCertificate,
-            String clientPassword,
+            Secret clientPassword,
             String serverCertificate,
-            String serverPassword,
+            Secret serverPassword,
             String jenkinsUrl,
             String jenkinsTunnel,
             String workerUrl,
@@ -285,11 +286,11 @@ public class NomadCloud extends AbstractCloudImpl {
         this.clientCertificate = clientCertificate;
     }
 
-    public String getClientPassword() {
+    public Secret getClientPassword() {
         return clientPassword;
     }
 
-    public void setClientPassword(String clientPassword) {
+    public void setClientPassword(Secret clientPassword) {
         this.clientPassword = clientPassword;
     }
 
@@ -301,11 +302,11 @@ public class NomadCloud extends AbstractCloudImpl {
         this.serverCertificate = serverCertificate;
     }
 
-    public String getServerPassword() {
+    public Secret getServerPassword() {
         return serverPassword;
     }
 
-    public void setServerPassword(String serverPassword) {
+    public void setServerPassword(Secret serverPassword) {
         this.serverPassword = serverPassword;
     }
 

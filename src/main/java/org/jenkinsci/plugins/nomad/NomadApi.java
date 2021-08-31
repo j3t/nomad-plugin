@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import hudson.Util;
+import hudson.util.Secret;
 import okhttp3.*;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.nomad.Api.*;
@@ -88,8 +89,8 @@ public final class NomadApi {
                     if (cloud.isTlsEnabled()) {
                         try {
                             OkHttpClientHelper.initTLS(clientBuilder,
-                                    cloud.getClientCertificate(), cloud.getClientPassword(),
-                                    cloud.getServerCertificate(), cloud.getServerPassword());
+                                    cloud.getClientCertificate(), Secret.toString(cloud.getClientPassword()),
+                                    cloud.getServerCertificate(), Secret.toString(cloud.getServerPassword()));
                         } catch (GeneralSecurityException | IOException e) {
                             LOGGER.log(Level.SEVERE, "Nomad TLS configuration failed! " + e.getMessage());
                         }

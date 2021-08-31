@@ -24,6 +24,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import hudson.util.Secret;
 
 import okhttp3.Request;
 
@@ -51,7 +52,8 @@ public class NomadApiClientTLSTest {
     /**
      * General password for all certificates.
      */
-    private static final String PASSWORD = "changeit";
+    //private static final String CLEAR_PASSWORD = "changeit";
+    private static final Secret PASSWORD = Secret.fromString("changeit");
 
     private static final String OK_RESPONSE = UUID.randomUUID().toString();
 
@@ -70,7 +72,7 @@ public class NomadApiClientTLSTest {
     @BeforeClass
     public static void setDefaultTrustStore() {
         System.setProperty("javax.net.ssl.trustStore", TRUSTSTORE_SERVER_A);
-        System.setProperty("javax.net.ssl.trustStorePassword", PASSWORD);
+        System.setProperty("javax.net.ssl.trustStorePassword", Secret.toString(PASSWORD));
     }
 
     @After
@@ -199,14 +201,14 @@ public class NomadApiClientTLSTest {
         if (keystore != null) {
             config.keystorePath(keystore)
                     .keystoreType("PKCS12")
-                    .keystorePassword(PASSWORD)
-                    .keyManagerPassword(PASSWORD);
+                    .keystorePassword(PASSWORD.getPlainText())
+                    .keyManagerPassword(PASSWORD.getPlainText());
         }
 
         if (truststore != null) {
             config.trustStorePath(truststore)
                     .trustStoreType("PKCS12")
-                    .trustStorePassword(PASSWORD);
+                    .trustStorePassword(PASSWORD.getPlainText());
         }
 
         wireMockServer = new WireMockServer(config);
