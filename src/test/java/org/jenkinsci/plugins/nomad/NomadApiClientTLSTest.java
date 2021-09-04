@@ -16,8 +16,10 @@ import java.util.UUID;
 
 import org.junit.After;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.jvnet.hudson.test.JenkinsRule;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -49,13 +51,12 @@ public class NomadApiClientTLSTest {
     private static final String TRUSTSTORE_CLIENT_B = loadResource("/tls/truststore_client_b.p12");
     private static final String TRUSTSTORE_SERVER_B = loadResource("/tls/truststore_server_b.p12");
 
-    /**
-     * General password for all certificates.
-     */
-    //private static final String CLEAR_PASSWORD = "changeit";
-    private static final Secret PASSWORD = Secret.fromString("changeit");
+    private static Secret PASSWORD;
 
     private static final String OK_RESPONSE = UUID.randomUUID().toString();
+
+    @ClassRule
+    public static JenkinsRule j = new JenkinsRule();
 
     @Mock
     private NomadCloud nomadCloud;
@@ -71,8 +72,9 @@ public class NomadApiClientTLSTest {
      */
     @BeforeClass
     public static void setDefaultTrustStore() {
+        PASSWORD = Secret.fromString("changeit");
         System.setProperty("javax.net.ssl.trustStore", TRUSTSTORE_SERVER_A);
-        System.setProperty("javax.net.ssl.trustStorePassword", Secret.toString(PASSWORD));
+        System.setProperty("javax.net.ssl.trustStorePassword", PASSWORD.getPlainText());
     }
 
     @After
