@@ -17,7 +17,7 @@ To connect to a TLS-enabled Nomad cluster:
   - If the Nomad cluster authenticates clients, configure the path to the PKCS12
     certificate and, if needed, the password to access the PKCS12 certificate.
 
-  - Specific a custom PKCS12 certificate to authenticate the Nomad cluster, if
+  - Specify a custom PKCS12 certificate to authenticate the Nomad cluster, if
     it can't be verified by the default truststore used by the Jenkins
     controller.
 
