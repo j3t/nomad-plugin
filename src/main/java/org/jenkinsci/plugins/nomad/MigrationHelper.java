@@ -37,7 +37,7 @@ import jenkins.model.Jenkins;
 public class MigrationHelper {
 
     /**
-     * Migrates a given {@link NomadCloud} (created with plugin version < 0.8.0) to the current version. If no migration is necessary
+     * Migrates a given {@link NomadCloud} (created with plugin version &lt; 0.8.0) to the current version. If no migration is necessary
      * then the given {@link NomadCloud} remains unchanged.
      * @since 0.8.0
      */
@@ -107,7 +107,7 @@ public class MigrationHelper {
     }
 
     /**
-     * This is basically a copy of the old NomadApi#buildWorkerJob method (plugin version < 0.8.0).
+     * This is basically a copy of the old NomadApi#buildWorkerJob method (plugin version &lt; 0.8.0).
      */
     private static String buildWorkerJob(
             String name,
@@ -174,7 +174,7 @@ public class MigrationHelper {
     }
 
     /**
-     * This is basically a copy of the old NomadApi#buildDriverConfig method (plugin version < 0.8.0).
+     * This is basically a copy of the old NomadApi#buildDriverConfig method (plugin version &lt; 0.8.0).
      */
     private static Map<String, Object> buildDriverConfig(String name, String secret, String jenkinsUrl, String jenkinsTunnel,
             NomadWorkerTemplate template) {
