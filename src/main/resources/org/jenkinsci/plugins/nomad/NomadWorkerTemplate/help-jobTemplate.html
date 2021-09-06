@@ -1,0 +1,13 @@
+<div>
+    This is the Job definition used to spawn a new agent in Nomad. You can customize it but two important things have to be kept in mind:
+    <ol>
+        <li>Job.ID must be %WORKER_NAME%</li>
+        <li>JNLP agent must be started up and the agent name must be %WORKER_NAME%</li>
+    </ol>
+    Below you can find a list of placeholders which are resolved before the job is being sent to Nomad.
+    <ul>
+        <li>%WORKER_NAME% - name of the Jenkins agent (e.g. jenkins-146ddad3c95c9).</li>
+        <li>%WORKER_SECRET% - secret for this agent to connect to Jenkins (e.g. 7f1bc810deeba3a4624aea3ef0fbc74b6d56bdee27ea006a1c8f560aa66075d4).</li>
+    </ul>
+    Note: The default job definition is pretty much ready to go. You only have to adjust Region, Datacenters, JENKINS_URL and JENKINS_TUNNEL.
+</div>

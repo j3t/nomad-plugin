@@ -11,18 +11,14 @@ public class NomadComputer extends AbstractCloudComputer<NomadWorker> {
 
     private static final Logger LOGGER = Logger.getLogger(NomadComputer.class.getName());
 
-    private final Boolean reusable;
-
     public NomadComputer(NomadWorker worker) {
         super(worker);
-
-        this.reusable = worker.getReusable();
     }
 
     @Override
     public void taskAccepted(Executor executor, Queue.Task task) {
         super.taskAccepted(executor, task);
-        if (!reusable) {
+        if (!getNode().isReusable()) {
             setAcceptingTasks(false);
         }
         LOGGER.log(Level.INFO, " Computer " + this + ": task accepted");
