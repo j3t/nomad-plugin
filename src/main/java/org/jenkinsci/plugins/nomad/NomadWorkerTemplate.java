@@ -10,6 +10,7 @@ import org.apache.commons.io.IOUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import hudson.Extension;
+import hudson.Util;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
 import hudson.model.Node;
@@ -73,7 +74,7 @@ public class NomadWorkerTemplate implements Describable<NomadWorkerTemplate> {
         this.idleTerminationInMinutes = idleTerminationInMinutes;
         this.reusable = reusable;
         this.numExecutors = numExecutors;
-        this.labels = labels;
+        this.labels = Util.fixNull(labels);
         this.jobTemplate = jobTemplate;
     }
 
