@@ -18,10 +18,15 @@ public class NomadComputer extends AbstractCloudComputer<NomadWorker> {
     @Override
     public void taskAccepted(Executor executor, Queue.Task task) {
         super.taskAccepted(executor, task);
-        if (!getNode().isReusable()) {
+        if (!isReusable()) {
             setAcceptingTasks(false);
         }
         LOGGER.log(Level.INFO, " Computer " + this + ": task accepted");
+    }
+
+    private boolean isReusable() {
+        NomadWorker node = getNode();
+        return node == null ? false : node.isReusable();
     }
 
     @Override
