@@ -96,14 +96,10 @@ public class MigrationHelper {
         String jobTemplate = getFieldValue(template, "jobTemplate");
 
         if (StringUtils.isEmpty(jobTemplate)) {
-            jobTemplate = createJobTemplate(template, jenkinsUrl, jenkinsTunnel, workerUrl);
+            jobTemplate = buildWorkerJob("%WORKER_NAME%", "%WORKER_SECRET%", jenkinsUrl, jenkinsTunnel, workerUrl, template);
 
             setFieldValue(template, "jobTemplate", jobTemplate);
         }
-    }
-
-    private static String createJobTemplate(NomadWorkerTemplate template, String jenkinsUrl, String jenkinsTunnel, String workerUrl) {
-        return buildWorkerJob("%WORKER_NAME%", "%WORKER_SECRET%", jenkinsUrl, jenkinsTunnel, workerUrl, template);
     }
 
     /**
