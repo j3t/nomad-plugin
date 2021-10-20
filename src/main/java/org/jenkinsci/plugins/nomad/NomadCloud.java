@@ -109,9 +109,6 @@ public class NomadCloud extends AbstractCloudImpl {
     private Object readResolve() {
         nomad = new NomadApi(this);
         MigrationHelper.migrate(this);
-
-        nomad = new NomadApi(this);
-
         return this;
     }
 
