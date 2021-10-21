@@ -31,34 +31,63 @@ public class NomadWorkerTemplate implements Describable<NomadWorkerTemplate> {
     private final String jobTemplate;
 
     // legacy fields (we have to keep them for backward compatibility)
+    @Deprecated
     private transient String region;
+    @Deprecated
     private transient int cpu;
+    @Deprecated
     private transient int memory;
+    @Deprecated
     private transient int disk;
+    @Deprecated
     private transient int priority;
+    @Deprecated
     private transient List<? extends NomadConstraintTemplate> constraints;
+    @Deprecated
     private transient String remoteFs;
+    @Deprecated
     private transient Boolean useRawExec;
+    @Deprecated
     private transient String image;
+    @Deprecated
     private transient Boolean privileged;
+    @Deprecated
     private transient String network;
+    @Deprecated
     private transient String username;
+    @Deprecated
     private transient Secret password;
+    @Deprecated
     private transient String prefixCmd;
+    @Deprecated
     private transient Boolean forcePull;
+    @Deprecated
     private transient String hostVolumes;
+    @Deprecated
     private transient String switchUser;
+    @Deprecated
     private transient Node.Mode mode;
+    @Deprecated
     private transient List<? extends NomadPortTemplate> ports;
+    @Deprecated
     private transient String extraHosts;
+    @Deprecated
     private transient String dnsServers;
+    @Deprecated
     private transient String securityOpt;
+    @Deprecated
     private transient String capAdd;
+    @Deprecated
     private transient String capDrop;
+    @Deprecated
     private transient String datacenters;
+    @Deprecated
     private transient String vaultPolicies;
+    @Deprecated
     private transient Set<LabelAtom> labelSet;
+    @Deprecated
     private transient List<? extends NomadDevicePluginTemplate> devicePlugins;
+    @Deprecated
     private transient String driver;
 
     @DataBoundConstructor
