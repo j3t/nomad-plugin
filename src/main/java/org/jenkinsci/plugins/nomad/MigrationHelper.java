@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.nomad.Api.Artifact;
@@ -36,12 +37,15 @@ import jenkins.model.Jenkins;
  */
 public class MigrationHelper {
 
+    private static final Logger LOGGER = Logger.getLogger(MigrationHelper.class.getName());
+
     /**
      * Migrates a given {@link NomadCloud} (created with plugin version &lt; 0.8.0) to the current version. If no migration is necessary
      * then the given {@link NomadCloud} remains unchanged.
      * @since 0.8.0
      */
     public static void migrate(NomadCloud cloud) {
+        LOGGER.info(String.format("migrate '%s'", cloud.getName()));
         migrateJenkinsUrl(cloud);
         migrateWorkerUrl(cloud);
         migrateTemplates(cloud);
@@ -63,7 +67,7 @@ public class MigrationHelper {
 
         if (StringUtils.isEmpty(workerUrl)) {
             String jenkinsUrl = getFieldValue(cloud, "jenkinsUrl");
-            setFieldValue(cloud, "workerUrl", Util.ensureEndsWith(jenkinsUrl, "/") + "jnlpJars/slave.jar");
+            migrateField(cloud, "workerUrl", Util.ensureEndsWith(jenkinsUrl, "/") + "jnlpJars/slave.jar");
         }
     }
 
@@ -71,7 +75,7 @@ public class MigrationHelper {
         String jenkinsUrl = getFieldValue(cloud, "jenkinsUrl");
 
         if (StringUtils.isEmpty(jenkinsUrl)) {
-            setFieldValue(cloud, "jenkinsUrl", Jenkins.get().getRootUrl());
+            migrateField(cloud, "jenkinsUrl", Jenkins.get().getRootUrl());
         }
     }
 
@@ -88,7 +92,7 @@ public class MigrationHelper {
                 driver = StringUtils.isEmpty(image) ? "java" : "docker";
             }
 
-            setFieldValue(template, "driver", driver);
+            migrateField(template, "driver", driver);
         }
     }
 
@@ -98,8 +102,19 @@ public class MigrationHelper {
         if (StringUtils.isEmpty(jobTemplate)) {
             jobTemplate = buildWorkerJob("%WORKER_NAME%", "%WORKER_SECRET%", jenkinsUrl, jenkinsTunnel, workerUrl, template);
 
-            setFieldValue(template, "jobTemplate", jobTemplate);
+            migrateField(template, "jobTemplate", jobTemplate);
         }
+    }
+
+    private static void migrateField(Object object, String fieldName, Object newValue) {
+        String oldValue = getFieldValue(object, fieldName);
+
+        setFieldValue(object, fieldName, newValue);
+
+        LOGGER.info(String.format("parameter migrated [param=%s, old=%s, new=%s]",
+                fieldName,
+                oldValue,
+                newValue));
     }
 
     /**
