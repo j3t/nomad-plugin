@@ -27,6 +27,8 @@
         <f:entry title="Job Template" field="jobTemplate">
             <f:textarea default="${descriptor.defaultJobTemplate}" />
         </f:entry>
+        <f:validateButton title="Validate" progress="Validating job file..." method="validation"
+                          with="nomadUrl,tlsEnabled,clientCertificate,clientPassword,serverCertificate,serverPassword,jobTemplate"/>
 
         <f:entry title="">
             <div align="right">

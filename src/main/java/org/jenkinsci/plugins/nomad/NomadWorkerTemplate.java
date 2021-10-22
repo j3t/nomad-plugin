@@ -2,12 +2,18 @@ package org.jenkinsci.plugins.nomad;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+import static org.jenkinsci.plugins.nomad.NomadApi.JSON;
+
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.verb.POST;
 
 import hudson.Extension;
 import hudson.Util;
@@ -15,8 +21,15 @@ import hudson.model.Describable;
 import hudson.model.Descriptor;
 import hudson.model.Node;
 import hudson.model.labels.LabelAtom;
+import hudson.util.FormValidation;
 import hudson.util.Secret;
 import jenkins.model.Jenkins;
+import okhttp3.Call;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 public class NomadWorkerTemplate implements Describable<NomadWorkerTemplate> {
 
@@ -160,6 +173,43 @@ public class NomadWorkerTemplate implements Describable<NomadWorkerTemplate> {
         @Override
         public String getDisplayName() {
             return "";
+        }
+
+        @POST
+        public FormValidation doValidation(
+                @QueryParameter String nomadUrl,
+                @QueryParameter boolean tlsEnabled,
+                @QueryParameter String clientCertificate,
+                @QueryParameter String clientPassword,
+                @QueryParameter String serverCertificate,
+                @QueryParameter String serverPassword,
+                @QueryParameter String jobTemplate) {
+            Objects.requireNonNull(Jenkins.get()).checkPermission(Jenkins.ADMINISTER);
+
+            try {
+                String id = UUID.randomUUID().toString();
+                Request request = new Request.Builder()
+                        .url(nomadUrl + "/v1/job/"+id+"/plan")
+                        .put(RequestBody.create(jobTemplate.replace("%WORKER_NAME%", id), JSON))
+                        .build();
+
+                OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
+                if (tlsEnabled) {
+                    OkHttpClientHelper.initTLS(clientBuilder, clientCertificate, clientPassword, serverCertificate, serverPassword);
+                }
+
+                Call call = clientBuilder.build().newCall(request);
+                try (Response response = call.execute()) {
+                    if (response.isSuccessful()) {
+                        return FormValidation.ok("OK");
+                    }
+                    try (ResponseBody body = response.body()) {
+                        return FormValidation.error(body != null ? body.string() : response.toString());
+                    }
+                }
+            } catch (Exception e) {
+                return FormValidation.error(e.getMessage());
+            }
         }
     }
 }
