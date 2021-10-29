@@ -65,7 +65,7 @@ public class NomadCloudConfigurationTest {
         String secret = UUID.randomUUID().toString();
 
         // WHEN
-        String job = nomadApi.buildWorkerJob(workerName, secret, template.getJobTemplate());
+        String job = nomadApi.buildWorkerJob(workerName, secret, template);
 
         // THEN
         assertThat(job, hasJsonPath("$.Job.ID", is(workerName)));
