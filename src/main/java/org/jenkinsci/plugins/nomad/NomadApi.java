@@ -67,7 +67,7 @@ public final class NomadApi {
     public FormValidation validateTemplate(NomadWorkerTemplate template) {
         String id = UUID.randomUUID().toString();
 
-        Request request = createRequestBuilder("/v1/job/"+id+"/plan")
+        Request request = createRequestBuilder("/v1/job/" + id + "/plan")
                 .post(RequestBody.create(buildWorkerJob(id, "", template), JSON))
                 .build();
 
