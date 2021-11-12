@@ -2,16 +2,18 @@ package org.jenkinsci.plugins.nomad;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
 import hudson.model.labels.LabelAtom;
 import hudson.slaves.NodeProvisioner;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.UUID;
 
 public class NomadCloudTest {
@@ -34,6 +36,21 @@ public class NomadCloudTest {
     }
 
     @Test
+    public void testCanProvisionDynamically() {
+        // GIVEN
+        LabelAtom label = createLabel();
+        NomadCloud cloud = createCloud();
+        NomadWorkerTemplate template = createTemplate(label.getName());
+        cloud.addDynamicTemplate(template);
+
+        // WHEN
+        boolean result = cloud.canProvision(label);
+
+        // THEN
+        assertThat(result, is(true));
+    }
+
+    @Test
     public void testProvision() {
         // GIVEN
         LabelAtom label = createLabel();
@@ -45,6 +62,21 @@ public class NomadCloudTest {
 
         // THEN
         assertThat(result.size(), is(3));
+    }
+
+    @Test
+    public void testProvisionDynamically() {
+        // GIVEN
+        LabelAtom label = createLabel();
+        NomadCloud cloud = createCloud();
+        NomadWorkerTemplate template = createTemplate(label.getName());
+        cloud.addDynamicTemplate(template);
+
+        // WHEN
+        Collection<NodeProvisioner.PlannedNode> result = cloud.provision(label, 1);
+
+        // THEN
+        assertThat(result.size(), is(1));
     }
 
     @Test
@@ -100,10 +132,10 @@ public class NomadCloudTest {
         NomadWorkerTemplate result = cloud.getTemplate(null);
 
         // THEN
-        assertThat(result, is(result));
+        assertThat(result, notNullValue());
     }
 
-    private NomadCloud createCloud(NomadWorkerTemplate template) {
+    private NomadCloud createCloud(NomadWorkerTemplate... template) {
         return new NomadCloud(
                 "nomad",
                 "nomadUrl",
@@ -115,7 +147,7 @@ public class NomadCloudTest {
                 1,
                 "",
                 false,
-                Collections.singletonList(template));
+                template == null ? null : Arrays.asList(template));
     }
 
     private NomadWorkerTemplate createTemplate(String labels) {

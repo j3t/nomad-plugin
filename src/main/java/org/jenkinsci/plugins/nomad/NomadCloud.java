@@ -20,6 +20,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 import org.jenkinsci.plugins.nomad.Api.JobInfo;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
@@ -65,6 +66,7 @@ public class NomadCloud extends AbstractCloudImpl {
     // non persistent fields
     private transient NomadApi nomad;
     private transient int pending = 0;
+    private transient List<NomadWorkerTemplate> dynamicTemplates;
 
     // legacy fields (we have to keep them for backward compatibility)
     private transient String jenkinsUrl;
@@ -96,6 +98,7 @@ public class NomadCloud extends AbstractCloudImpl {
         this.serverPassword = serverPassword;
         this.prune = prune;
         this.templates = Optional.ofNullable(templates).orElse(new ArrayList<>());
+        this.dynamicTemplates = new ArrayList<>();
 
         readResolve();
     }
@@ -172,15 +175,10 @@ public class NomadCloud extends AbstractCloudImpl {
 
     // Find the correct template for job
     public NomadWorkerTemplate getTemplate(Label label) {
-        for (NomadWorkerTemplate t : templates) {
-            if (label == null && !t.getLabels().isEmpty()) {
-                continue;
-            }
-            if ((label == null && t.getLabels().isEmpty()) || (label != null && label.matches(Label.parse(t.getLabels())))) {
-                return t;
-            }
-        }
-        return null;
+        return Stream.concat(templates.stream(), dynamicTemplates.stream())
+                .filter(t -> label == null && t.getLabels().isEmpty() || (label != null && label.matches(Label.parse(t.getLabels()))))
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
@@ -247,6 +245,22 @@ public class NomadCloud extends AbstractCloudImpl {
 
     public Secret getServerPassword() {
         return serverPassword;
+    }
+
+    /**
+     * Adds a so called 'dynamic jobTemplate' to this cloud. It is pretty much the same as the jobTemplate defined via the cloud
+     * management, but it is not editable and not visible. It can only be accessed via the assigned label.
+     */
+    public void addDynamicTemplate(NomadWorkerTemplate template) {
+        dynamicTemplates.add(template);
+    }
+
+    /**
+     * Removes an existing so called 'dynamic jobTemplate'.
+     * @param label the label assigned to the 'dynamic jobTemplate' you want to remove
+     */
+    public void removeDynamicTemplate(String label) {
+        dynamicTemplates.removeIf(t -> t.getLabels().equals(label));
     }
 
     @Extension
